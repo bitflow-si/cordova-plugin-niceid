@@ -4,7 +4,6 @@
 
     <!-- android -->
     <platform name="android">
-
         <js-module name="NiceId" src="www/niceid.js">
             <clobbers target="cordova.plugins.niceid" />
         </js-module>
@@ -16,6 +15,13 @@
 
         <source-file src="src/android/CertificationWebActivity.java" target-dir="src/org/apache/cordova/niceid" />
         <source-file src="src/android/NiceId.java" target-dir="src/org/apache/cordova/niceid" />
+    </platform>
+
+    <!-- ios -->
+    <platform name="ios">
+        <js-module name="NiceId" src="www/niceid.js">
+            <clobbers target="cordova.plugins.niceid" />
+        </js-module>
     </platform>
        
 </plugin>

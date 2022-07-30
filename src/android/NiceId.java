@@ -3,6 +3,7 @@ package org.apache.cordova.niceid;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 
 import androidx.activity.result.ActivityResult;
@@ -25,27 +26,26 @@ public class NiceId extends CordovaPlugin {
     private final String TAG = "NiceId";
     private final int REQUEST_CODE = 6018;
     private final String ACTION_REQUEST_NICEID = "requestNiceId";
-    private final String MOBILE = "mobile";
-    private final String I_PIN = "i_pin";
     private final String KEY_TYPE = "type";
     private CallbackContext ctxCallback;
+//    private ActivityResultLauncher<Intent> startActivityResult;
 
-    private final ActivityResultLauncher<Intent> startActivityResult = cordova.getActivity().registerForActivityResult(
-        new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if (result.getResultCode() == Activity.RESULT_OK) {
-                        Intent intent = result.getData();
-                        String msg = intent.getStringExtra(MobileCertification.NAME);
-                        Log.d(TAG, "onActivityResult " + msg);
-                        ctxCallback.sendPluginResult(
-                                new PluginResult(PluginResult.Status.OK, msg));
-                    }
-                }
-            });
-
-
+//    public NiceId() {
+//        startActivityResult = cordova.getActivity().registerForActivityResult(
+//            new ActivityResultContracts.StartActivityForResult(),
+//            new ActivityResultCallback<ActivityResult>() {
+//                @Override
+//                public void onActivityResult(ActivityResult result) {
+//                    if (result.getResultCode() == Activity.RESULT_OK) {
+//                        Intent intent = result.getData();
+//                        String msg = intent.getStringExtra(MobileCertification.NAME);
+//                        Log.d(TAG, "onActivityResult " + msg);
+//                        ctxCallback.sendPluginResult(
+//                                new PluginResult(PluginResult.Status.OK, msg));
+//                    }
+//                }
+//            });
+//    }
 
     @Override
     public boolean execute(String action, final JSONArray args,
@@ -61,16 +61,16 @@ public class NiceId extends CordovaPlugin {
 
             cordova.getThreadPool().execute(new Runnable() {
                 public void run() {
-                    Intent intent = new Intent(cordova.getActivity(), CertificationWebActivity.class);
-                    startActivityResult.launch(intent);
 //                    Intent intent = new Intent(cordova.getActivity(), CertificationWebActivity.class);
-//                    try {
-//                        intent.putExtra(KEY_TYPE, args.get(0).toString());
-//
-//                        cordova.getActivity().startActivityForResult(intent, REQUEST_CODE);
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
+//                    startActivityResult.launch(intent);
+                    Intent intent = new Intent(cordova.getActivity(), CertificationWebActivity.class);
+                    try {
+                        intent.putExtra(KEY_TYPE, args.get(0).toString());
+
+                        cordova.getActivity().startActivityForResult(intent, REQUEST_CODE);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
             return true;
@@ -78,26 +78,16 @@ public class NiceId extends CordovaPlugin {
         return false;
     }
 
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-//        super.onActivityResult(requestCode, resultCode, intent);
-//        if (requestCode == REQUEST_CODE && intent != null) {
-//            Bundle extras = intent.getExtras();
-//            String msg = extras.getString(MobileCertification.NAME);
-//            Log.d(TAG, "onActivityResult " + msg);
-//            this.ctx.sendPluginResult(new PluginResult(PluginResult.Status.OK,
-//                    msg));
-//        }
-//    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if (requestCode == REQUEST_CODE && intent != null) {
+            Bundle extras = intent.getExtras();
+            String msg = extras.getString(MobileCertification.NAME);
+            Log.d(TAG, "onActivityResult " + msg);
+            this.ctxCallback.sendPluginResult(new PluginResult(PluginResult.Status.OK,
+                    msg));
+        }
+    }
 
-//    @Override
-//    public void onActivityResult(ActivityResult result) {
-//        if (result.getResultCode() == Activity.RESULT_OK) {
-//            Intent intent = result.getData();
-//            String msg = intent.getStringExtra(MobileCertification.NAME);
-//            Log.d(TAG, "onActivityResult " + msg);
-//            this.ctxCallback.sendPluginResult(
-//                    new PluginResult(PluginResult.Status.OK, msg));
-//        }
-//    }
 }
