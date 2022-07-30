@@ -4,12 +4,13 @@
 
     <!-- android -->
     <platform name="android">
+
         <js-module name="NiceId" src="www/niceid.js">
             <clobbers target="cordova.plugins.niceid" />
         </js-module>
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="NiceId">
-                <param name="android-package" value="org.apache.cordova.niceid" />
+                <param name="android-package" value="org.apache.cordova.niceid.NiceId" />
             </feature>
         </config-file>
 

@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-niceid",
-  "version": "5.0.2",
+  "version": "0.0.1",
   "description": "Cordova NiceId Plugin",
   "cordova": {
     "id": "cordova-plugin-niceid",
