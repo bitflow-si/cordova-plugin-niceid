@@ -1,0 +1,26 @@
+{
+  "name": "cordova-plugin-niceid",
+  "version": "5.0.2",
+  "description": "Cordova NiceId Plugin",
+  "cordova": {
+    "id": "cordova-plugin-niceid",
+    "platforms": [
+      "android"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bitflow-si/cordova-plugin-niceid"
+  },
+  "bugs": {
+    "url": "https://github.com/bitflow-si/cordova-plugin-niceid/issues"
+  },
+  "keywords": [
+    "cordova",
+    "cordova-android",
+    "cordova-ios",
+    "niceid"
+  ],
+  "author": "SungJoon Kim",
+  "license": "Apache-2.0"
+}
