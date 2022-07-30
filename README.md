@@ -1,1 +1,1 @@
-# cordova-plugin-niceid
+# Cordova plugin NiceID
