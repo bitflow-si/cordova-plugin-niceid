@@ -13,8 +13,9 @@
             </feature>
         </config-file>
 
-        <source-file src="src/android/CertificationWebActivity.java" target-dir="src/org/apache/cordova/niceid" />
         <source-file src="src/android/NiceId.java" target-dir="src/org/apache/cordova/niceid" />
+        <source-file src="src/android/CertificationWebActivity.java" target-dir="src/org/apache/cordova/niceid" />
+
     </platform>
 
     <!-- ios -->
