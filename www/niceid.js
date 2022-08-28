@@ -10,4 +10,3 @@ module.exports.downloadFile = function (arg0, success, error) {
 module.exports.startScanBeacon = function (success, error) {
     exec(success, error, 'NiceId', 'startScanBeacon', []);
 };
-
