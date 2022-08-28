@@ -12,9 +12,12 @@
                 <param name="android-package" value="org.apache.cordova.niceid.NiceId" />
             </feature>
         </config-file>
-
+        <config-file target="AndroidManifest.xml" parent="application">
+	<activity android:name="org.apache.cordova.niceid.CertificationWebActivity" android:screenOrientation="portrait" android:theme="@style/Theme.AppCompat.NoActionBar" android:windowSoftInputMode="adjustResize|stateHidden" />
+        </config-file>
         <source-file src="src/android/NiceId.java" target-dir="src/org/apache/cordova/niceid" />
         <source-file src="src/android/CertificationWebActivity.java" target-dir="src/org/apache/cordova/niceid" />
+        <source-file src="src/android/MobileCertification.java" target-dir="src/org/apache/cordova/niceid" />
 
     </platform>
 
@@ -23,6 +26,14 @@
         <js-module name="NiceId" src="www/niceid.js">
             <clobbers target="cordova.plugins.niceid" />
         </js-module>
+        <config-file target="config.xml" parent="/*">
+            <feature name="NiceId">
+                <param name="ios-package" value="NiceId" />
+            </feature>
+        </config-file>
+        <source-file src="src/ios/NiceId.swift" />
+        <source-file src="src/ios/WebViewController.swift" />
+        
     </platform>
        
 </plugin>
