@@ -33,28 +33,11 @@ public class NiceId extends CordovaPlugin {
     private final String ACTION_REQUEST_NICEID = "requestNiceId";
     private final String ACTION_DOWNLOADFILE = "downloadFile";
     private final String ACTION_START_SCAN_BEACON = "startScanBeacon";
+    private final String KEY_URL = "url";
     private final String KEY_TYPE = "type";
     private CallbackContext ctxCallback;
     private BeaconManager beaconManager;
 
-//    private ActivityResultLauncher<Intent> startActivityResult;
-
-//    public NiceId() {
-//        startActivityResult = cordova.getActivity().registerForActivityResult(
-//            new ActivityResultContracts.StartActivityForResult(),
-//            new ActivityResultCallback<ActivityResult>() {
-//                @Override
-//                public void onActivityResult(ActivityResult result) {
-//                    if (result.getResultCode() == Activity.RESULT_OK) {
-//                        Intent intent = result.getData();
-//                        String msg = intent.getStringExtra(MobileCertification.NAME);
-//                        Log.d(TAG, "onActivityResult " + msg);
-//                        ctxCallback.sendPluginResult(
-//                                new PluginResult(PluginResult.Status.OK, msg));
-//                    }
-//                }
-//            });
-//    }
 
     @Override
     public boolean execute(String action, final JSONArray args,
@@ -72,7 +55,8 @@ public class NiceId extends CordovaPlugin {
                 public void run() {
                     Intent intent = new Intent(cordova.getActivity(), CertificationWebActivity.class);
                     try {
-                        intent.putExtra(KEY_TYPE, args.get(0).toString());
+                        intent.putExtra(KEY_URL, args.get(0).toString());
+                        intent.putExtra(KEY_TYPE, args.get(1).toString());
                         cordova.getActivity().startActivityForResult(intent, REQUEST_CODE);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -82,7 +66,9 @@ public class NiceId extends CordovaPlugin {
             return true;
 
         } else if (ACTION_DOWNLOADFILE.equals(action)) {
+            
             new DownloadFile().execute((String)args.get(0));
+
         } else if (ACTION_START_SCAN_BEACON.equals(action)) {
             beaconManager = BeaconManager.getInstanceForApplication(cordova.getContext());
 
