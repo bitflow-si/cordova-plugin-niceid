@@ -2,7 +2,7 @@ import UIKit
 import WebKit
 
 
-class WebViewController: UIViewController, WKUIDelegate, WKNavigationDelegate {
+class WebViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler {
 
     var webView: WKWebView!
     var url: String?
@@ -23,7 +23,17 @@ class WebViewController: UIViewController, WKUIDelegate, WKNavigationDelegate {
     override func loadView() {
         
         super.loadView()
-        self.webView = WKWebView(frame: self.view.frame)
+        
+        
+        let webConfiguration = WKWebViewConfiguration()
+        let userScript = WKUserScript(source: "call()", injectionTime: .atDocumentEnd, forMainFrameOnly: true)
+        let contentController = WKUserContentController()
+        contentController.addUserScript(userScript)
+        contentController.add(self, name: "callbackHandler")
+
+        webConfiguration.userContentController = contentController
+        self.webView = WKWebView(frame: self.view.frame, configuration: webConfiguration)
+        
         if (self.url?.isEmpty==false) {
             let url = URL(string: self.url!)
             let request = URLRequest(url: url!)
@@ -33,26 +43,23 @@ class WebViewController: UIViewController, WKUIDelegate, WKNavigationDelegate {
             self.view = self.webView
             webView.load(request)
         }
-    
     }
     
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        // UIApplication.shared.isNetworkActivityIndicatorVisible = false
-        let urlStr: String? = webView.url?.path
-        if (urlStr?.isEmpty==false) {
-            print("url " + urlStr!)
-            if (urlStr!.contains("checkplus_ok")) {
-                self.webView?.evaluateJavaScript("setTimeout( function() { call() }, 10);", completionHandler: { (result, error) in
-                    if error == nil {
-                        let resultStr =  result as? String ?? ""
-                        print("result=", resultStr, ".")
-                        self.cordovaPlugin?.getResult(data: resultStr)
-                        self.dismiss(animated: true)
-                    } else {
-                        print("evaluateJavascript error " + error.debugDescription)
-                    }
-                })
-           }
+    @available(iOS 8.0, *)
+    public func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Swift.Void){
+        let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+        let otherAction = UIAlertAction(title: "OK", style: .default, handler: {action in completionHandler()})
+        alert.addAction(otherAction)
+        self.present(alert, animated: true, completion: nil)
+    }
+
+    // JS -> Native CALL
+    @available(iOS 8.0, *)
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage){
+        if(message.name == "callbackHandler"){
+            let resultStr =  message.body  as? String ?? ""
+            self.cordovaPlugin?.getResult(data: resultStr)
+            self.dismiss(animated: true)
         }
     }
     
