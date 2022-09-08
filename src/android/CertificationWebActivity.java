@@ -16,8 +16,6 @@ import android.webkit.WebViewClient;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.gson.Gson;
 
-import org.apache.cordova.CordovaActivity;
-import org.snuh.healthcare.healthpilot.dto.MobileCertification;
 import java.net.URISyntaxException;
 
 

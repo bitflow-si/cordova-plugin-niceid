@@ -1,11 +1,12 @@
 {
   "name": "cordova-plugin-niceid",
-  "version": "0.0.1",
-  "description": "Cordova NiceId Plugin",
+  "version": "0.5.0",
+  "description": "Cordova plugin that help openning NiceID certification popup",
   "cordova": {
     "id": "cordova-plugin-niceid",
     "platforms": [
-      "android"
+      "android",
+      "ios"
     ]
   },
   "repository": {
