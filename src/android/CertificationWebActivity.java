@@ -23,6 +23,7 @@ public class CertificationWebActivity extends AppCompatActivity {
 
     private final String MOBILE = "mobile";
     private final String I_PIN = "i_pin";
+    private final String KEY_URL = "url";
     private final String KEY_TYPE = "type";
     private WebView webView;
 
@@ -124,12 +125,13 @@ public class CertificationWebActivity extends AppCompatActivity {
 
         Intent intent = this.getIntent();
         if (intent != null) {
+            String url = intent.getStringExtra(KEY_URL);
             String keyType = intent.getStringExtra(KEY_TYPE);
             if (keyType != null) {
                 if (MOBILE.equals(keyType)) {
-                    webView.loadUrl("http://snuhdev.bitflow.ai/view/checkplus");
+                    webView.loadUrl(url);
                 } else if (I_PIN.equals(keyType)) {
-                    webView.loadUrl("https://cert.vno.co.kr/ipin.cb");
+                    webView.loadUrl(url);
                 }
             }
         }
