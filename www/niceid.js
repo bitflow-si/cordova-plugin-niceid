@@ -11,3 +11,10 @@ module.exports.startScanBeacon = function (success, error) {
     exec(success, error, 'NiceId', 'startScanBeacon', []);
 };
 
+module.exports.requestQRScanner = function (success, error) {
+    exec(success, error, 'NiceId', 'requestQRScanner', []);
+};
+
+module.exports.checkPermissions = function (success, error) {
+    exec(success, error, 'NiceId', 'checkPermissions', []);
+};
