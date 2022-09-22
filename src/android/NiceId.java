@@ -44,8 +44,7 @@ public class NiceId extends CordovaPlugin {
     private final String ACTION_REQUEST_QR_CODE = "requestQRScanner";
     private final String ACTION_CHECK_PERMISSIONS = "checkPermissions";
     private final String KEY_TYPE = "type";
-    private final int PERMISSION_REQUEST_COARSE_LOCATION = 100;
-    private final int PERMISSION_REQUEST_CAMERA = 101;
+    private final int PERMISSION_REQUEST_HEALTHPILOT = 100;
     private CallbackContext ctxCallback;
     private BeaconManager beaconManager;
 
@@ -148,6 +147,14 @@ public class NiceId extends CordovaPlugin {
                     permsShouldBeGranted.add(Manifest.permission.CAMERA);
                 }
 
+                permissionCheckResult = (Integer) checkSelfPermissionMethod.invoke(
+                        activity, Manifest.permission.BLUETOOTH_SCAN);
+                Log.i(TAG, "Permission check result for BLUETOOTH_SCAN: " +
+                        String.valueOf(permissionCheckResult));
+                if (permissionCheckResult != PackageManager.PERMISSION_GRANTED) {
+                    permsShouldBeGranted.add(Manifest.permission.BLUETOOTH_SCAN);
+                }
+
                 if (permsShouldBeGranted==null || permsShouldBeGranted.size()<1) {
                     return true;
                 }
@@ -162,7 +169,7 @@ public class NiceId extends CordovaPlugin {
 
                 requestPermissionsMethod.invoke(activity,
                         permsShouldBeGranted.toArray(new String[0]),
-                        PERMISSION_REQUEST_COARSE_LOCATION);
+                        PERMISSION_REQUEST_HEALTHPILOT);
 
             } catch (final IllegalAccessException e) {
                 Log.w(TAG, "IllegalAccessException while checking for ACCESS_COARSE_LOCATION:", e);
