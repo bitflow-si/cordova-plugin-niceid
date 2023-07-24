@@ -1,5 +1,6 @@
 import UIKit
 import WebKit
+import Foundation
 
 class WebViewController: UIViewController,WKNavigationDelegate, WKUIDelegate {
     
@@ -17,37 +18,66 @@ class WebViewController: UIViewController,WKNavigationDelegate, WKUIDelegate {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func setPreferenceWithId(_ key: String, value: Any) {
+        UserDefaults.standard.set(value, forKey: key)
+        UserDefaults.standard.synchronize()
+    }
+    
+    func getPreferenceWithId(_ key: String) -> Any? {
+        return UserDefaults.standard.value(forKey: key)
+    }
+    
     override func loadView() {
         let webConfiguration = WKWebViewConfiguration()
         webView = WKWebView(frame: .zero, configuration: webConfiguration)
-        
+        //        webView.navigationDelegate = self
+        //        webView.uiDelegate = self
+        //        webView.configuration.preferences.javaScriptEnabled = true
         view = webView
     }
     
-    func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
-        print(webView.url?.absoluteString ?? "", "decidePolicyFor")
-        
-        // 응답 내용을 가져와서 출력
-//        if let response = navigationResponse.response as? HTTPURLResponse {
-//            print("Response: \(response)")
-//        }
-        
-        // 기본적으로 응답을 허용합니다.
-        decisionHandler(.allow)
-    }
-
-    
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         let requestURL = navigationAction.request.url?.absoluteString ?? ""
-        print(requestURL, "WKNavigationAction")
+        print("Request URL: \(requestURL)")
         
-        if(requestURL.hasPrefix("tauthlink") || requestURL.hasPrefix("ktauthexternalcall") || requestURL.hasPrefix("upluscorporation") || requestURL.hasPrefix("niceipin2")) {
-            decisionHandler(.cancel)
-            return
+        webView.evaluateJavaScript("document.cookie") { (result, error) in
+            if let resVal = result as? String {
+                print("saveCookie : " + resVal)
+                
+                let dataComponents = resVal.components(separatedBy: "; ")
+                for dataComponent in dataComponents {
+                    let keyValue = dataComponent.components(separatedBy: "=")
+                    if(keyValue.count == 2){
+                        let key = keyValue[0]
+                        let value = keyValue[1]
+                        self.setPreferenceWithId(key, value: value)
+                        print(key, value)
+                    }
+                }
+            }
         }
         
         decisionHandler(.allow)
-        return
+    }
+    
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        print(webView.url?.absoluteString ?? "", "didFail")
+        print("Failed to load the URL with error: \(error.localizedDescription)")
+    }
+    
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        print(webView.url?.absoluteString ?? "", "didFailProvisionNavigation")
+        print("Failed to load the URL with error: \(error.localizedDescription)")
+    }
+    
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        let presentUrl = webView.url?.absoluteString as? String ?? ""
+        print(presentUrl, "didFinish")
+    }
+    
+    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        let presentUrl = webView.url?.absoluteString as? String ?? ""
+        print(presentUrl, "didStartProvisionalNavigation")
     }
     
     override func viewDidLoad() {
@@ -55,12 +85,10 @@ class WebViewController: UIViewController,WKNavigationDelegate, WKUIDelegate {
         
         webView = WKWebView(frame: .zero)
         
-        webView.translatesAutoresizingMaskIntoConstraints = false
-        webView.scrollView.bounces = true
-        webView.scrollView.showsHorizontalScrollIndicator = false
         webView.navigationDelegate = self
         webView.uiDelegate = self
-        webView.scrollView.scrollsToTop = true
+        webView.translatesAutoresizingMaskIntoConstraints = false
+        
         webView.configuration.suppressesIncrementalRendering = false
         webView.configuration.selectionGranularity = .dynamic
         webView.configuration.allowsInlineMediaPlayback = false
@@ -68,12 +96,13 @@ class WebViewController: UIViewController,WKNavigationDelegate, WKUIDelegate {
         webView.configuration.allowsPictureInPictureMediaPlayback = true
         webView.configuration.websiteDataStore = .default()
         webView.configuration.mediaTypesRequiringUserActionForPlayback = .all
-        
         webView.configuration.preferences.minimumFontSize = 0
         webView.configuration.preferences.javaScriptCanOpenWindowsAutomatically = true
         webView.configuration.preferences.javaScriptEnabled = true
         
         view.addSubview(webView)
+        
+        webView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
