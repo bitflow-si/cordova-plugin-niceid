@@ -6,10 +6,12 @@ class WebViewController: UIViewController,WKNavigationDelegate, WKUIDelegate {
     
     var webView: WKWebView!
     var command: CDVInvokedUrlCommand
+    var url: NSString
     var commandDelegate: CDVCommandDelegate
     
     init(command: CDVInvokedUrlCommand, delegate: CDVCommandDelegate) {
         self.command = command
+        self.url = command.argument(at: 0)[1]
         self.commandDelegate = delegate
         super.init(nibName: nil, bundle: nil)
     }
@@ -111,11 +113,8 @@ class WebViewController: UIViewController,WKNavigationDelegate, WKUIDelegate {
             webView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
         
-        if let url = URL(string: "https://test2-apihealthpilot.snuh.org/view/checkplus"){
-            let request = URLRequest(url: url)
-            webView.load(request)
-        }
+        let request = URLRequest(URL(self.url))
+        webView.load(request)
     }
-    
     
 }
