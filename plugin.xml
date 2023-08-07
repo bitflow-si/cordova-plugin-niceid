@@ -44,8 +44,6 @@
                 <param name="ios-package" value="NiceId" />
             </feature>
         </config-file>
-	<header-file src="src/ios/CustomWKWebView.h" />
-        <source-file src="src/ios/CustomWKWebView.m" />
         <source-file src="src/ios/NiceId.swift" />
         <source-file src="src/ios/WebViewController.swift" />
         
