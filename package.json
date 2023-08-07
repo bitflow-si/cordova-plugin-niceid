@@ -1,5 +1,5 @@
 {
-  "name": "cordova-plugin-niceid",
+  "name": "@bitflow-inc/cordova-plugin-niceid",
   "version": "0.5.0",
   "description": "Cordova plugin that help openning NiceID certification popup",
   "cordova": {
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/bitflow-si/cordova-plugin-niceid"
+    "url": "git+https://github.com/bitflow-si/cordova-plugin-niceid.git"
   },
   "bugs": {
     "url": "https://github.com/bitflow-si/cordova-plugin-niceid/issues"
@@ -22,6 +22,11 @@
     "cordova-ios",
     "niceid"
   ],
-  "author": "SungJoon Kim",
-  "license": "Apache-2.0"
+  "author": "Bitflow, Inc.",
+  "license": "MIT",
+  "homepage": "https://github.com/bitflow-si/cordova-plugin-niceid#readme",
+  "main": "www/niceid.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
 }
