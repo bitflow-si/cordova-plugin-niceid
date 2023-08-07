@@ -2,16 +2,18 @@ import UIKit
 import WebKit
 import Foundation
 
-class WebViewController: UIViewController,WKNavigationDelegate, WKUIDelegate {
+class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
     
     var webView: WKWebView!
     var command: CDVInvokedUrlCommand
-    var url: NSString
+    var url: URL
     var commandDelegate: CDVCommandDelegate
+    var isCheckPlus: Bool = false
     
     init(command: CDVInvokedUrlCommand, delegate: CDVCommandDelegate) {
         self.command = command
-        self.url = command.argument(at: 0)[1]
+        let args = command.argument(at: 0) as! NSArray
+        self.url = URL(string: args[1] as! String)!
         self.commandDelegate = delegate
         super.init(nibName: nil, bundle: nil)
     }
@@ -20,91 +22,53 @@ class WebViewController: UIViewController,WKNavigationDelegate, WKUIDelegate {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setPreferenceWithId(_ key: String, value: Any) {
-        UserDefaults.standard.set(value, forKey: key)
-        UserDefaults.standard.synchronize()
-    }
-    
-    func getPreferenceWithId(_ key: String) -> Any? {
-        return UserDefaults.standard.value(forKey: key)
-    }
-    
-    override func loadView() {
-        let webConfiguration = WKWebViewConfiguration()
-        webView = WKWebView(frame: .zero, configuration: webConfiguration)
-        //        webView.navigationDelegate = self
-        //        webView.uiDelegate = self
-        //        webView.configuration.preferences.javaScriptEnabled = true
-        view = webView
-    }
-    
-    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        let requestURL = navigationAction.request.url?.absoluteString ?? ""
-        print("Request URL: \(requestURL)")
-        
-        webView.evaluateJavaScript("document.cookie") { (result, error) in
-            if let resVal = result as? String {
-                print("saveCookie : " + resVal)
-                
-                let dataComponents = resVal.components(separatedBy: "; ")
-                for dataComponent in dataComponents {
-                    let keyValue = dataComponent.components(separatedBy: "=")
-                    if(keyValue.count == 2){
-                        let key = keyValue[0]
-                        let value = keyValue[1]
-                        self.setPreferenceWithId(key, value: value)
-                        print(key, value)
-                    }
-                }
-            }
-        }
-        
-        decisionHandler(.allow)
-    }
-    
-    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        print(webView.url?.absoluteString ?? "", "didFail")
-        print("Failed to load the URL with error: \(error.localizedDescription)")
-    }
-    
-    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        print(webView.url?.absoluteString ?? "", "didFailProvisionNavigation")
-        print("Failed to load the URL with error: \(error.localizedDescription)")
-    }
-    
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         let presentUrl = webView.url?.absoluteString as? String ?? ""
-        print(presentUrl, "didFinish")
-    }
-    
-    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-        let presentUrl = webView.url?.absoluteString as? String ?? ""
-        print(presentUrl, "didStartProvisionalNavigation")
+        // niceid callback called here
+        // http://{IP}:8080/view/checkplus_ok didStartProvisionalNavigation
+        print("didFinish", presentUrl)
+        
+        if (presentUrl.hasSuffix("checkplus_ok")) {
+            print("didFinish checkplus")
+            // 플러그인 내용 작성하기
+            self.webView.evaluateJavaScript("javascript:call()",  completionHandler: { [self] (result, error) in
+                if (error == nil) {
+                    if let result = result {
+                        print("evaluateJavaScript result", result)
+                        if let parsedResult = convertToJSON(resultData: convertToResultData(from: result)!) {
+                            let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: parsedResult)
+                            self.commandDelegate.send(pluginResult, callbackId: self.command.callbackId)
+                        } else {
+                            let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR)
+                            self.commandDelegate.send(pluginResult, callbackId: self.command.callbackId)
+                        }
+                    }else {
+                        let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR)
+                        self.commandDelegate.send(pluginResult, callbackId: self.command.callbackId)
+                    }
+                } else {
+                    print("evaluateJavaScript error \(error!.localizedDescription)")
+                    let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR)
+                    self.commandDelegate.send(pluginResult, callbackId: self.command.callbackId)
+                }
+                self.dismiss(animated: false)
+              })
+        }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        webView = WKWebView(frame: .zero)
-        
+        let preferences = WKPreferences()
+        preferences.javaScriptEnabled = true
+        preferences.javaScriptCanOpenWindowsAutomatically = true
+        let configuration = WKWebViewConfiguration()
+        configuration.preferences = preferences
+        webView = WKWebView(frame: .zero, configuration: configuration)
+        webView.translatesAutoresizingMaskIntoConstraints = false
         webView.navigationDelegate = self
         webView.uiDelegate = self
-        webView.translatesAutoresizingMaskIntoConstraints = false
-        
-        webView.configuration.suppressesIncrementalRendering = false
-        webView.configuration.selectionGranularity = .dynamic
-        webView.configuration.allowsInlineMediaPlayback = false
-        webView.configuration.allowsAirPlayForMediaPlayback = false
-        webView.configuration.allowsPictureInPictureMediaPlayback = true
-        webView.configuration.websiteDataStore = .default()
-        webView.configuration.mediaTypesRequiringUserActionForPlayback = .all
-        webView.configuration.preferences.minimumFontSize = 0
-        webView.configuration.preferences.javaScriptCanOpenWindowsAutomatically = true
-        webView.configuration.preferences.javaScriptEnabled = true
-        
+
         view.addSubview(webView)
-        
-        webView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -112,9 +76,48 @@ class WebViewController: UIViewController,WKNavigationDelegate, WKUIDelegate {
             webView.topAnchor.constraint(equalTo: view.topAnchor),
             webView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
-        
-        let request = URLRequest(URL(self.url))
+
+        let request = URLRequest(url: self.url)
         webView.load(request)
     }
     
+    func convertToResultData(from data: Any) -> ResultData? {
+        guard let dictionary = data as? [String: Any] else { return nil }
+        let resultData = ResultData()
+        resultData.CI = dictionary["CI"] as? String
+        resultData.DI = dictionary["DI"] as? String
+        resultData.sAuthType = dictionary["sAuthType"] as? String
+        resultData.sBirthDate = dictionary["sBirthDate"] as? String
+        resultData.sGender = dictionary["sGender"] as? String
+        resultData.sMobileNo = dictionary["sMobileNo"] as? String
+        resultData.sName = dictionary["sName"] as? String
+        resultData.sNationalInfo = dictionary["sNationalInfo"] as? String
+        
+        return resultData
+    }
+    
+    func convertToJSON(resultData: ResultData) -> String? {
+        let jsonEncoder = JSONEncoder()
+        do {
+            let jsonData = try jsonEncoder.encode(resultData)
+            let jsonString = String(data: jsonData, encoding: .utf8)
+            return jsonString
+        } catch {
+            print("Error converting to JSON: \(error)")
+            return nil
+        }
+    }
+
+    
+}
+
+class ResultData: Codable {
+    var CI: String?
+    var DI: String?
+    var sAuthType: String?
+    var sBirthDate: String?
+    var sGender: String?
+    var sMobileNo: String?
+    var sName: String?
+    var sNationalInfo: String?
 }
