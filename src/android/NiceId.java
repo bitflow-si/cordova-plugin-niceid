@@ -65,6 +65,7 @@ public class NiceId extends CordovaPlugin {
                 Intent intent = new Intent(cordova.getActivity(), CertificationWebActivity.class);
                 try {
                     intent.putExtra(KEY_TYPE, args.get(0).toString());
+                    intent.putExtra("url", args.get(1).toString());
                     cordova.getActivity().startActivityForResult(intent, REQUEST_CODE_NICEID);
                 } catch (JSONException e) {
                     e.printStackTrace();
