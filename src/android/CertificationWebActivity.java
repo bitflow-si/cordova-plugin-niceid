@@ -127,7 +127,7 @@ public class CertificationWebActivity extends AppCompatActivity {
             String keyType = intent.getStringExtra(KEY_TYPE);
             if (keyType != null) {
                 if (MOBILE.equals(keyType)) {
-                    webView.loadUrl("http://snuhdev.bitflow.ai/view/checkplus");
+                    webView.loadUrl(intent.getExtras().get("url").toString());
                 } else if (I_PIN.equals(keyType)) {
                     webView.loadUrl("https://cert.vno.co.kr/ipin.cb");
                 }
