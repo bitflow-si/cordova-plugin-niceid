@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">healthpilot</string>
+    <string name="launcher_name">@string/app_name</string>
+    <string name="activity_name">@string/launcher_name</string>
+    <string name="info_01">스캔에 실패 시,\n수진자의 등록번호를 입력하세요</string>
+    <string name="info_02">수진번호</string>
+    <string name="info_16">수진자의 QR코드를 스캔하세요.</string>
+    <string name="info_17">등록번호를 입력해주세요.</string>
+    <string name="info_71">수진번호 8자리를 입력 해주세요</string>
+    <string name="btn_save">저장</string>
+    <string name="message_application_close">\'뒤로\'버튼을 한번 더 누르시면 종료됩니다.</string>
+    <string name="message_error_barcode_data">인식할 수 없는 QR코드 형식입니다.</string>
+</resources>
