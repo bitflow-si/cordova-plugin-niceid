@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<plugin id="@bitflow-inc/cordova-plugin-niceid" version="1.0.6"
+<plugin id="@bitflow-inc/cordova-plugin-niceid" version="1.0.7"
         xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
 
     <name>NiceId</name>
@@ -44,6 +44,8 @@
         <source-file src="src/android/NiceId.java" target-dir="src/org/apache/cordova/niceid" />
         <source-file src="src/android/MobileCertification.java" target-dir="src/org/apache/cordova/niceid" />
         <source-file src="src/android/QRCodeData.java" target-dir="src/org/apache/cordova/niceid" />
+        <source-file src="src/android/CertificationWebActivity.java" target-dir="src/org/apache/cordova/niceid" />
+        <source-file src="src/android/BarcodeActivity.java" target-dir="src/org/apache/cordova/niceid" />
 
         <source-file src="src/android/activity_barcode.xml" target-dir="res/layout" />
         <source-file src="src/android/custom_barcode_scanner.xml" target-dir="res/layout" />
