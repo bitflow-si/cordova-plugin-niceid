@@ -1,6 +1,6 @@
 {
   "name": "@bitflow-inc/cordova-plugin-niceid",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Cordova plugin that help opening NiceID certification popup",
   "cordova": {
     "id": "@bitflow-inc/cordova-plugin-niceid",
