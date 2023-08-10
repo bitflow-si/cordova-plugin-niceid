@@ -1,15 +1,20 @@
 <?xml version='1.0' encoding='utf-8'?>
-<plugin id="@bitflow-inc/cordova-plugin-niceid" version="1.0.5" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+<plugin id="@bitflow-inc/cordova-plugin-niceid" version="1.0.6"
+        xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+
     <name>NiceId</name>
 
     <!-- android -->
     <platform name="android">
+
         <js-module name="NiceId" src="www/niceid.js">
             <clobbers target="cordova.plugins.niceid" />
         </js-module>
+
         <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
             <application android:usesCleartextTraffic="true" />
         </edit-config>
+
         <config-file target="AndroidManifest.xml" parent="/manifest">
             <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
             <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -17,18 +22,27 @@
             <uses-permission android:name="android.permission.CAMERA" />
             <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
         </config-file>
+
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="NiceId">
                 <param name="android-package" value="org.apache.cordova.niceid.NiceId" />
             </feature>
         </config-file>
+
         <config-file target="AndroidManifest.xml" parent="application">
-            <activity android:name="org.apache.cordova.niceid.CertificationWebActivity" android:screenOrientation="portrait" android:theme="@style/Theme.AppCompat.NoActionBar" android:windowSoftInputMode="adjustResize|stateHidden" android:exported="false" />
+
+            <activity android:name="org.apache.cordova.niceid.CertificationWebActivity"
+                      android:screenOrientation="portrait" android:theme="@style/Theme.AppCompat.NoActionBar"
+                      android:windowSoftInputMode="adjustResize|stateHidden" android:exported="true"/>
+            <activity
+                    android:name="org.apache.cordova.niceid.BarcodeActivity"
+                    android:launchMode="singleTask"
+                    android:screenOrientation="portrait"
+                    android:theme="@style/Theme.AppCompat.NoActionBar" android:exported="true"/>
         </config-file>
+
         <source-file src="src/android/NiceId.java" target-dir="src/org/apache/cordova/niceid" />
-        <source-file src="src/android/CertificationWebActivity.java" target-dir="src/org/apache/cordova/niceid" />
         <source-file src="src/android/MobileCertification.java" target-dir="src/org/apache/cordova/niceid" />
-        <source-file src="src/android/BarcodeActivity.java" target-dir="src/org/apache/cordova/niceid" />
         <source-file src="src/android/QRCodeData.java" target-dir="src/org/apache/cordova/niceid" />
 
         <source-file src="src/android/activity_barcode.xml" target-dir="res/layout" />
